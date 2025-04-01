@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Mirror - unknw.substack.com</title>
+    <link>https://mirror.unknw.org/posts/</link>
+    <description>Recent content in Posts on Mirror - unknw.substack.com</description>
+    <generator>Hugo</generator>
+    <language>pt-br</language>
+    <atom:link href="https://mirror.unknw.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Apresentação Do Projeto</title>
+      <link>https://mirror.unknw.org/posts/edt-01-free-00/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://mirror.unknw.org/posts/edt-01-free-00/</guid>
+      <description>&lt;p&gt;Se você está lendo este texto pode ser que já me conheça ou tenha ouvido alguma coisa sobre mim, aos que estão me conhecendo agora sejam bem vindos.&lt;/p&gt;&#xA;&lt;p&gt;Aos que me conhecem bem já sabem das minhas opiniões sobre acesso a informação e sobre hacking, aos demais gostaria de deixar claro minha admiração a quem dedica seu tempo para transmitir conhecimento para o próximo e acredito que estas pessoas deveriam ser recompensadas, começando pelo respeito, mas também acredito que o conhecimento deve ser livre e acessível para todos. Não condeno a venda cursos/conteúdo, exceto os feitos por uns “marketeiros” e algumas escolas de programação por ai que criaram  um mercado agressivo e com promessas audaciosas em cima de conteúdo raso e de baixa qualidade.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Estrutura de um PNG e esteganografia</title>
+      <link>https://mirror.unknw.org/posts/edt-01-free-01/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://mirror.unknw.org/posts/edt-01-free-01/</guid>
+      <description>&lt;p&gt;Bom, inaugurando esse projeto decidi começar com algo aleatório (nem tanto). Pelo titulo você já deve imaginar que irei falar sobre imagens PNG. Mas antes um aviso da paróquia: este artigo faz parte do conteúdo público e gratuito do projeto. Nesse artigo, irei abordar uma técnica de esteganografia simples, na parte dois eu irei mostrar alguns ajustes e um exemplo realista de como usar isso em engagements.&lt;/p&gt;&#xA;&lt;p&gt;O PNG é a sigla para Portable Network Graphics é um formato de imagem que surge em 1996 como substituto do GIF, já que na época o formato GIF utilizava o algoritmo de compressão LZW (Lempel–Ziv–Welch) que foi patenteado pela Unisys. Diferente de um JPEG, que implementa um algoritmo de compressão com perdas, ou seja, cada vez que é editado ou salvo novamente, o arquivo perde qualidade. Isso explica aqueles memes bem antigos que hoje em dia só estão no pixel. O PNG implementa algoritmos de compressão sem perdas. O que para um cenário de exfiltração de dados é algo bem interessante, onde veremos isso mais tarde, mas primeiro vamos falar das especificações técnicas do formato.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

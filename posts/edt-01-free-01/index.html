@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Estrutura de um PNG e esteganografia :: Mirror - unknw.substack.com</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Bom, inaugurando esse projeto decidi começar com algo aleatório (nem tanto). Pelo titulo você já deve imaginar que irei falar sobre imagens PNG. Mas antes um aviso da paróquia: este artigo faz parte do conteúdo público e gratuito do projeto. Nesse artigo, irei abordar uma técnica de esteganografia simples, na parte dois eu irei mostrar alguns ajustes e um exemplo realista de como usar isso em engagements.
+O PNG é a sigla para Portable Network Graphics é um formato de imagem que surge em 1996 como substituto do GIF, já que na época o formato GIF utilizava o algoritmo de compressão LZW (Lempel–Ziv–Welch) que foi patenteado pela Unisys. Diferente de um JPEG, que implementa um algoritmo de compressão com perdas, ou seja, cada vez que é editado ou salvo novamente, o arquivo perde qualidade. Isso explica aqueles memes bem antigos que hoje em dia só estão no pixel. O PNG implementa algoritmos de compressão sem perdas. O que para um cenário de exfiltração de dados é algo bem interessante, onde veremos isso mais tarde, mas primeiro vamos falar das especificações técnicas do formato.
+" />
+<meta name="keywords" content="" />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="https://mirror.unknw.org/posts/edt-01-free-01/" />
+
+
+
+
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/buttons.min.86f6b4c106b6c6eb690ae5203d36b442c1f66f718ff4e8164fa86cf6c61ad641.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/code.min.4f0ccc8439f99bf7f7970298556b94011aabc1fcae743b6842fc3361a2da9ea3.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/fonts.min.5bb7ed13e1d00d8ff39ea84af26737007eb5051b157b86fc24487c94f3dc8bbe.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/footer.min.eb8dfc2c6a7eafa36cd3ba92d63e69e849e2200e0002a228d137f236b09ecd75.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/gist.min.a751e8b0abe1ba8bc53ced52a38b19d8950fe78ca29454ea8c2595cf26aad5c0.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/header.min.75c7eb0e2872d95ff48109c6647d0223a38db52e2561dd87966eb5fc7c6bdac6.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/main.min.15870410d15d02abd22fb5ef00996f65a00d04b3a7435e9f83831c7c2298de88.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/pagination.min.bbb986dbce00a5ce5aca0504b7925fc1c581992a4bf57f163e5d69cc1db7d836.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/post.min.e6dddd258e64c83e05cec0cd49c05216742d42fc8ecbfbe6b67083412b609bd3.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/syntax.min.a0773cce9310cb6d8ed23e50f005448facf29a53001b57e038828daa466b25c0.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/terminal.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css">
+
+  
+  <link rel="stylesheet" href="https://mirror.unknw.org/css/terms.min.b81791663c3790e738e571cdbf802312390d30e4b1d8dc9d814a5b5454d0ac11.css">
+
+
+<link rel="stylesheet" href="https://mirror.unknw.org/terminal.css">
+
+
+
+
+<link rel="shortcut icon" href="https://mirror.unknw.org/favicon.png">
+<link rel="apple-touch-icon" href="https://mirror.unknw.org/apple-touch-icon.png">
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Estrutura de um PNG e esteganografia">
+<meta property="og:description" content="Bom, inaugurando esse projeto decidi começar com algo aleatório (nem tanto). Pelo titulo você já deve imaginar que irei falar sobre imagens PNG. Mas antes um aviso da paróquia: este artigo faz parte do conteúdo público e gratuito do projeto. Nesse artigo, irei abordar uma técnica de esteganografia simples, na parte dois eu irei mostrar alguns ajustes e um exemplo realista de como usar isso em engagements.
+O PNG é a sigla para Portable Network Graphics é um formato de imagem que surge em 1996 como substituto do GIF, já que na época o formato GIF utilizava o algoritmo de compressão LZW (Lempel–Ziv–Welch) que foi patenteado pela Unisys. Diferente de um JPEG, que implementa um algoritmo de compressão com perdas, ou seja, cada vez que é editado ou salvo novamente, o arquivo perde qualidade. Isso explica aqueles memes bem antigos que hoje em dia só estão no pixel. O PNG implementa algoritmos de compressão sem perdas. O que para um cenário de exfiltração de dados é algo bem interessante, onde veremos isso mais tarde, mas primeiro vamos falar das especificações técnicas do formato.
+" />
+<meta property="og:url" content="https://mirror.unknw.org/posts/edt-01-free-01/" />
+<meta property="og:site_name" content="Mirror - unknw.substack.com" />
+
+  <meta property="og:image" content="https://mirror.unknw.org/og-image.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+
+<div class="container center">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="https://mirror.unknw.org/">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
+    </div>
+    
+    
+  </div>
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://mirror.unknw.org/posts/edt-01-free-01/">Estrutura de um PNG e esteganografia</a>
+  </h1>
+  <div class="post-meta"></div>
+
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>Bom, inaugurando esse projeto decidi começar com algo aleatório (nem tanto). Pelo titulo você já deve imaginar que irei falar sobre imagens PNG. Mas antes um aviso da paróquia: este artigo faz parte do conteúdo público e gratuito do projeto. Nesse artigo, irei abordar uma técnica de esteganografia simples, na parte dois eu irei mostrar alguns ajustes e um exemplo realista de como usar isso em engagements.</p>
+<p>O PNG é a sigla para Portable Network Graphics é um formato de imagem que surge em 1996 como substituto do GIF, já que na época o formato GIF utilizava o algoritmo de compressão LZW (Lempel–Ziv–Welch) que foi patenteado pela Unisys. Diferente de um JPEG, que implementa um algoritmo de compressão com perdas, ou seja, cada vez que é editado ou salvo novamente, o arquivo perde qualidade. Isso explica aqueles memes bem antigos que hoje em dia só estão no pixel. O PNG implementa algoritmos de compressão sem perdas. O que para um cenário de exfiltração de dados é algo bem interessante, onde veremos isso mais tarde, mas primeiro vamos falar das especificações técnicas do formato.</p>
+<p>Se tratando de  magic number um arquivo PNG possui 8 bytes característicos: <code>89 50 4E 47 0D 0A 1A 0A</code> , sendo o significado de cata byte:</p>
+<ul>
+<li>89 - Um carácter não ASCII para reduzir as chances do arquivo ser interpretado como um arquivo de texto.</li>
+<li>50 4E 47 - São respectivamente em ASCII a sigla “PNG”</li>
+<li>0D 0A - São em ASCII \r \n, a sequência CR-LF para quebra de linha em ambiente DOS</li>
+<li>1A - O carácter de interrupção em ambientes DOS (Ctrl+Z)</li>
+<li>0A - Outro \n para caracterizar uma quebra de linha em ambiente UNIX</li>
+</ul>
+<p>Entretanto, somente isso não caracteriza um arquivo como um PNG, dentro de sua estrutura também possui <em>chunks</em> específicos de abertura o IHDR(chunk de cabeçalho), IDAT(chunk de dados) e fechamento o IEND(chunk de rodapé), sem eles um arquivo PNG não será interpretado corretamente pelos parsers de PNG.</p>
+<p>O interessante para o cenário que iremos desenhar, é a própria estrutura de um chunk em um PNG que se compõe de 4 bytes correspondente ao tamanho da seção de dados, um cabeçalho que de 4 bytes ASCII que define seu tipo, a seção de dados aonde parte da imagem é criada e por fim o CRC(cyclic redundancy check).</p>
+<p>Seguindo as especificações, o cabeçalho do chunk deve possuir 4 letras sendo elas identificadas por maiúsculas e minúsculas onde, a primeira letra caso seja maiúscula representa um chunk critico, o que significa que é essencial para exibição da imagem. Do contrário representa um chunk ancilar que pode ser ignorado com segurança caso desconhecido.</p>
+<p>Para a segunda letra, caso seja maiúscula, representa um chunk público, ou seja, ele pertence às especificações oficiais do formato, caso contrário, ele é um chunk privado  que fica a cargo de um parser específico interpretar.</p>
+<p>Na terceira letra, ela deve ser maiúscula, mas um parser customizado não deve rejeitar um chunk apenas por este motivo, tal regra foi criada para existir compatibilidade com novas versões do formato.</p>
+<p>E a quarta letra, caso seja minúscula, representa que é um chunk seguro para se copiar, em outras palavras, um editor de imagem deve copiar esse chunk mesmo que ele não seja reconhecido, caso o contrário seja um chunk inseguro para cópia, se um chunk crítico for editado, o mesmo não será copiado.</p>
+<p>Isso é interessante, pois podemos criar parsers que interpretem chunks de forma diferente e caso ele desconheça o chunk ele será ignorado por padrão, ou seja, um excelente formato para esconder dados dentro de imagens.</p>
+<p>Sabendo disso vamos começar por a mão na massa e programar algo que consiga interpretar, por exemplo, o chunk o cabeçalho <code>fiLe</code>como um arquivo em um PNG.</p>
+<p>Primeiro criamos uma struct seguindo os padrões de um chunk e implementamos uma função read que será nosso reader e responsável por interpretar os chunks em uma imagem:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">// png_utils/chunk.rs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">use</span> std::io::{self, Read, Write};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[repr(C)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[derive(Debug)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Chunk</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> length: <span style="color:#66d9ef">u32</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> chunk_type: [<span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">4</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> data: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> crc: <span style="color:#66d9ef">u32</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> Chunk {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(length: <span style="color:#66d9ef">u32</span>, chunk_type: [<span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">4</span>], data: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>, crc: <span style="color:#66d9ef">u32</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            length,
+</span></span><span style="display:flex;"><span>            chunk_type,
+</span></span><span style="display:flex;"><span>            data,
+</span></span><span style="display:flex;"><span>            crc,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Reader function of chunks inside PNG
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">read</span><span style="color:#f92672">&lt;</span>R: <span style="color:#a6e22e">Read</span><span style="color:#f92672">&gt;</span>(reader: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> R) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>Self<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> lenght_buf <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span><span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">4</span>];
+</span></span><span style="display:flex;"><span>        reader.read_exact(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> lenght_buf)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> length <span style="color:#f92672">=</span> <span style="color:#66d9ef">u32</span>::from_be_bytes(lenght_buf);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> chunk_type <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span><span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">4</span>];
+</span></span><span style="display:flex;"><span>        reader.read_exact(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> chunk_type)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> data <span style="color:#f92672">=</span> vec![<span style="color:#ae81ff">0</span><span style="color:#66d9ef">u8</span>; length <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>];
+</span></span><span style="display:flex;"><span>        reader.read_exact(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> data)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> crc_buf <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span><span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">4</span>];
+</span></span><span style="display:flex;"><span>        reader.read_exact(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> crc_buf)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> crc <span style="color:#f92672">=</span> <span style="color:#66d9ef">u32</span>::from_be_bytes(crc_buf);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Ok(Self::new(length, chunk_type, data, crc))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">&lt;</span>W: <span style="color:#a6e22e">Write</span><span style="color:#f92672">&gt;</span>(<span style="color:#f92672">&amp;</span>self, writer: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> W) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        writer.write_all(<span style="color:#f92672">&amp;</span>self.length.to_be_bytes())<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        writer.write_all(<span style="color:#f92672">&amp;</span>self.chunk_type)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        writer.write_all(<span style="color:#f92672">&amp;</span>self.data)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        writer.write_all(<span style="color:#f92672">&amp;</span>self.crc.to_be_bytes())<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        Ok(())
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>O próximo passo vamos criar uma struct PNG onde implementaremos funções de reader e writer.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">// png_utils/png.rs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">use</span> <span style="color:#66d9ef">crate</span>::png_utils::chunk::Chunk;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> crc32fast::Hasher;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::fs::File;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::io::{self, Read, Write};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Assinatura no PNG (PNG Magic Number)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">PNG_SIG</span>: [<span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">8</span>] <span style="color:#f92672">=</span> [<span style="color:#ae81ff">137</span>, <span style="color:#ae81ff">80</span>, <span style="color:#ae81ff">78</span>, <span style="color:#ae81ff">71</span>, <span style="color:#ae81ff">13</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">26</span>, <span style="color:#ae81ff">10</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">INJECTED_CHUNK_TYPE</span>: [<span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">4</span>] <span style="color:#f92672">=</span> <span style="color:#f92672">*</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;fiLe&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">PNG</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> signature: [<span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">8</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> chunks: Vec<span style="color:#f92672">&lt;</span>Chunk<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> <span style="color:#66d9ef">PNG</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(chunks: Vec<span style="color:#f92672">&lt;</span>Chunk<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            signature: <span style="color:#a6e22e">PNG_SIG</span>,
+</span></span><span style="display:flex;"><span>            chunks,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">read</span><span style="color:#f92672">&lt;</span>R: <span style="color:#a6e22e">Read</span><span style="color:#f92672">&gt;</span>(reader: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> R) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>Self<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> signature <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span><span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">8</span>];
+</span></span><span style="display:flex;"><span>        reader.read_exact(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> signature)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> signature <span style="color:#f92672">!=</span> <span style="color:#66d9ef">PNG_SIG</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> Err(io::Error::new(
+</span></span><span style="display:flex;"><span>                io::ErrorKind::InvalidData,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Invalid PNG signature&#34;</span>,
+</span></span><span style="display:flex;"><span>            ));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> chunks <span style="color:#f92672">=</span> Vec::new();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// criando um vetor de chunks utilizando a função read de Chunk
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">let</span> Ok(chunk) <span style="color:#f92672">=</span> Chunk::read(reader) {
+</span></span><span style="display:flex;"><span>            chunks.push(chunk);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Ok(Self { signature, chunks })
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">inject_file</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self, injectable_filepath: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; <span style="color:#a6e22e">std</span>::io::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> injected_data <span style="color:#f92672">=</span> std::fs::read(injectable_filepath)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Calculando o CRC da imagem utilizando o chunk_type e data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> hasher <span style="color:#f92672">=</span> Hasher::new();
+</span></span><span style="display:flex;"><span>        hasher.update(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">INJECTED_CHUNK_TYPE</span>);
+</span></span><span style="display:flex;"><span>        hasher.update(<span style="color:#f92672">&amp;</span>injected_data);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> crc <span style="color:#f92672">=</span> hasher.finalize();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> injected_chunk <span style="color:#f92672">=</span> Chunk::new(
+</span></span><span style="display:flex;"><span>            injected_data.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u32</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">INJECTED_CHUNK_TYPE</span>,
+</span></span><span style="display:flex;"><span>            injected_data,
+</span></span><span style="display:flex;"><span>            crc,
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// adicionando o arquivo injetado no chunk fiLeapós o chunk IHDR
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(pos) <span style="color:#f92672">=</span> self.chunks.iter().position(<span style="color:#f92672">|</span>c<span style="color:#f92672">|</span> c.chunk_type <span style="color:#f92672">==</span> <span style="color:#f92672">*</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;IHDR&#34;</span>) {
+</span></span><span style="display:flex;"><span>            self.chunks.insert(pos <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, injected_chunk);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            self.chunks.push(injected_chunk);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Ok(())
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">extract_injected_file</span>(<span style="color:#f92672">&amp;</span>self, output_filepath: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; <span style="color:#a6e22e">std</span>::io::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> output_fiLe<span style="color:#f92672">=</span> File::create(output_filepath)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(chunk) <span style="color:#f92672">=</span> self
+</span></span><span style="display:flex;"><span>            .chunks
+</span></span><span style="display:flex;"><span>            .iter()
+</span></span><span style="display:flex;"><span>            .find(<span style="color:#f92672">|</span>c<span style="color:#f92672">|</span> c.chunk_type <span style="color:#f92672">==</span> <span style="color:#66d9ef">INJECTED_CHUNK_TYPE</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            output_file.write_all(<span style="color:#f92672">&amp;</span>chunk.data)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        Ok(())
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">&lt;</span>W: <span style="color:#a6e22e">Write</span><span style="color:#f92672">&gt;</span>(<span style="color:#f92672">&amp;</span>self, writer: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> W) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        writer.write_all(<span style="color:#f92672">&amp;</span>self.signature)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> chunk <span style="color:#66d9ef">in</span> <span style="color:#f92672">&amp;</span>self.chunks {
+</span></span><span style="display:flex;"><span>            chunk.write(writer)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        Ok(())
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> png_utils::png::<span style="color:#66d9ef">PNG</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> sha2::{Digest, Sha256};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::fs::File;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::io::{BufReader, BufWriter, Read};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">mod</span> png_utils;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">RESET</span>: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x1b</span><span style="color:#e6db74">[0m&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">GREEN</span>: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x1b</span><span style="color:#e6db74">[32;1m&#34;</span>; <span style="color:#75715e">// Bold Green
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">YELLOW</span>: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x1b</span><span style="color:#e6db74">[33;1m&#34;</span>; <span style="color:#75715e">// Bold Yellow
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">RED</span>: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x1b</span><span style="color:#e6db74">[31;1m&#34;</span>; <span style="color:#75715e">// Bold Red
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    show_png_info(<span style="color:#e6db74">&#34;cat.png&#34;</span>);
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;+--------------------------------+&#34;</span>);
+</span></span><span style="display:flex;"><span>    insert_file(<span style="color:#e6db74">&#34;cat.png&#34;</span>, <span style="color:#e6db74">&#34;database.kdbx&#34;</span>);
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;+--------------------------------+&#34;</span>);
+</span></span><span style="display:flex;"><span>    extract_file(<span style="color:#e6db74">&#34;modified.png&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">calculate_sha256</span>(filepath: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; <span style="color:#a6e22e">std</span>::io::Result<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> fiLe<span style="color:#f92672">=</span> File::open(filepath)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> hasher <span style="color:#f92672">=</span> Sha256::new();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buffer <span style="color:#f92672">=</span> Vec::new();
+</span></span><span style="display:flex;"><span>    file.read_to_end(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> buffer)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    hasher.update(<span style="color:#f92672">&amp;</span>buffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> hasher.finalize();
+</span></span><span style="display:flex;"><span>    Ok(format!(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{:x}</span><span style="color:#e6db74">&#34;</span>, result))
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">show_png_info</span>(filepath: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> fiLe<span style="color:#f92672">=</span> File::open(filepath).expect(<span style="color:#e6db74">&#34;Failed to open file&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> reader <span style="color:#f92672">=</span> BufReader::new(file);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">match</span> <span style="color:#66d9ef">PNG</span>::read(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> reader) {
+</span></span><span style="display:flex;"><span>        Ok(png) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> sha256sum <span style="color:#f92672">=</span> calculate_sha256(filepath).expect(<span style="color:#e6db74">&#34;Failed to calculate SHA256&#34;</span>);
+</span></span><span style="display:flex;"><span>            println!(<span style="color:#e6db74">&#34;File: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, filepath);
+</span></span><span style="display:flex;"><span>            println!(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">SHA256: </span><span style="color:#e6db74">{}{}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#66d9ef">YELLOW</span>, sha256sum, <span style="color:#66d9ef">RESET</span>);
+</span></span><span style="display:flex;"><span>            println!(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Successfully read PNG fiLewith </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> chunks</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">GREEN</span>,
+</span></span><span style="display:flex;"><span>                png.chunks.len(),
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">RESET</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> chunk <span style="color:#66d9ef">in</span> <span style="color:#f92672">&amp;</span>png.chunks {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> chunk_type <span style="color:#f92672">=</span> std::<span style="color:#66d9ef">str</span>::from_utf8(<span style="color:#f92672">&amp;</span>chunk.chunk_type).unwrap_or(<span style="color:#e6db74">&#34;Invalid UTF-8&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> crc <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>chunk.crc;
+</span></span><span style="display:flex;"><span>                println!(
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Chunk Type:</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">CRC:</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">GREEN</span>, <span style="color:#66d9ef">RESET</span>, chunk_type, <span style="color:#66d9ef">YELLOW</span>, <span style="color:#66d9ef">RESET</span>, crc
+</span></span><span style="display:flex;"><span>                );
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        Err(e) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>            eprintln!(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Error reading PNG file: </span><span style="color:#e6db74">{}{}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#66d9ef">RED</span>, <span style="color:#66d9ef">RESET</span>, e);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">insert_file</span>(filepath: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>, injectable_filepath: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> fiLe<span style="color:#f92672">=</span> File::open(filepath).expect(<span style="color:#e6db74">&#34;Failed to open file&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> reader <span style="color:#f92672">=</span> BufReader::new(file);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">match</span> <span style="color:#66d9ef">PNG</span>::read(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> reader) {
+</span></span><span style="display:flex;"><span>        Ok(<span style="color:#66d9ef">mut</span> png) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>            png.inject_file(injectable_filepath)
+</span></span><span style="display:flex;"><span>                .expect(<span style="color:#e6db74">&#34;Failed to inject file&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> output_fiLe<span style="color:#f92672">=</span> File::create(<span style="color:#e6db74">&#34;modified.png&#34;</span>).expect(<span style="color:#e6db74">&#34;Failed to create output file&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> writer <span style="color:#f92672">=</span> BufWriter::new(output_file);
+</span></span><span style="display:flex;"><span>            png.write(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> writer).expect(<span style="color:#e6db74">&#34;Failed to write PNG file&#34;</span>);
+</span></span><span style="display:flex;"><span>            println!(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Injected chunk added and saved as modified.png</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">GREEN</span>, <span style="color:#66d9ef">RESET</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> chunk <span style="color:#66d9ef">in</span> <span style="color:#f92672">&amp;</span>png.chunks {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> chunk_type <span style="color:#f92672">=</span> std::<span style="color:#66d9ef">str</span>::from_utf8(<span style="color:#f92672">&amp;</span>chunk.chunk_type).unwrap_or(<span style="color:#e6db74">&#34;Invalid UTF-8&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> crc <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>chunk.crc;
+</span></span><span style="display:flex;"><span>                println!(
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Chunk Type:</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">CRC:</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">GREEN</span>, <span style="color:#66d9ef">RESET</span>, chunk_type, <span style="color:#66d9ef">YELLOW</span>, <span style="color:#66d9ef">RESET</span>, crc
+</span></span><span style="display:flex;"><span>                );
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        Err(e) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>            eprintln!(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Error reading PNG file: </span><span style="color:#e6db74">{}{}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#66d9ef">RED</span>, <span style="color:#66d9ef">RESET</span>, e);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">extract_file</span>(png_filepath: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> fiLe<span style="color:#f92672">=</span> File::open(png_filepath).expect(<span style="color:#e6db74">&#34;Failed to open file&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> reader <span style="color:#f92672">=</span> BufReader::new(file);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">match</span> <span style="color:#66d9ef">PNG</span>::read(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> reader) {
+</span></span><span style="display:flex;"><span>        Ok(png) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> sha256sum <span style="color:#f92672">=</span> calculate_sha256(png_filepath).expect(<span style="color:#e6db74">&#34;Failed to calculate SHA256&#34;</span>);
+</span></span><span style="display:flex;"><span>            println!(<span style="color:#e6db74">&#34;File: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, png_filepath);
+</span></span><span style="display:flex;"><span>            println!(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">SHA256: </span><span style="color:#e6db74">{}{}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#66d9ef">YELLOW</span>, sha256sum, <span style="color:#66d9ef">RESET</span>);
+</span></span><span style="display:flex;"><span>            println!(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Successfully read PNG fiLewith </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> chunks</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">GREEN</span>,
+</span></span><span style="display:flex;"><span>                png.chunks.len(),
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">RESET</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> chunk <span style="color:#66d9ef">in</span> <span style="color:#f92672">&amp;</span>png.chunks {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> chunk_type <span style="color:#f92672">=</span> std::<span style="color:#66d9ef">str</span>::from_utf8(<span style="color:#f92672">&amp;</span>chunk.chunk_type).unwrap_or(<span style="color:#e6db74">&#34;Invalid UTF-8&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> crc <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>chunk.crc;
+</span></span><span style="display:flex;"><span>                println!(
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Chunk Type:</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">CRC:</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">GREEN</span>, <span style="color:#66d9ef">RESET</span>, chunk_type, <span style="color:#66d9ef">YELLOW</span>, <span style="color:#66d9ef">RESET</span>, crc
+</span></span><span style="display:flex;"><span>                );
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            png.extract_injected_file(<span style="color:#e6db74">&#34;extracted.bin&#34;</span>)
+</span></span><span style="display:flex;"><span>                .expect(<span style="color:#e6db74">&#34;Failed to extract injected file&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        Err(e) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>            eprintln!(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">Error reading PNG file: </span><span style="color:#e6db74">{}{}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#66d9ef">RED</span>, <span style="color:#66d9ef">RESET</span>, e);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Por fim, com o código pronto será injetado o arquivo <code>database.kdbx</code> que contem o segredo Data dentro dele.</p>
+<p><img src="/img/edt-01-free-01/image-01.png" alt=""></p>
+<p><img src="/img/edt-01-free-01/image-02.png" alt=""></p>
+<p>Nota-se que a imagem original (cat.png) possui apenas 4 chunks antes de injetar o arquivo <code>database.kdbx</code> no chunk <code>fILe</code>.</p>
+<p>Como podemos ver abaixo visualmente as imagens continuam idênticas apenas notamos a diferença quando comparamos seu checksum e conteúdo interno.</p>
+<p><img src="/img/edt-01-free-01/image-03.png" alt=""></p>
+<p><img src="/img/edt-01-free-01/image-04.png" alt=""></p>
+<p>É possível verificar que a imagem visualmente não foi alterada, já que como citado anteriormente o</p>
+<p>Para garantir que não falei nenhuma baboseira iremos editar o arquivo modified.png que já esta com o arquivo de senhas escondido na imagem, o processo de edição será configurar as cores em negativo e ao exportar para um PNG habilitar todas as opções que o Gimp disponibiliza, para assim criar o máximo de “ruído” no arquivo.</p>
+<p><img src="/img/edt-01-free-01/image-05.png" alt=""></p>
+<p><img src="/img/edt-01-free-01/image-06.png" alt=""></p>
+<p><img src="/img/edt-01-free-01/image-07.png" alt=""></p>
+<p><img src="/img/edt-01-free-01/image-08.png" alt=""></p>
+<p>O número de chunks que antes era cinco no arquivo modified.png passa para 23 e mantendo o chunk fiLe com o mesmo CRC o que garante que é mesmo arquivo até então, nota-se que tanto o arquivo extracted.bin e extracted-gimp.bin possuem o mesmo checksum, enquanto todas as imagens são diferentes.</p>
+<p><img src="/img/edt-01-free-01/image-09.png" alt=""></p>
+<p><img src="/img/edt-01-free-01/image-10.png" alt=""></p>
+<p><img src="/img/edt-01-free-01/image-11.png" alt=""></p>
+<p><img src="/img/edt-01-free-01/image-12.png" alt=""></p>
+<p>Por fim nota-se que não houve nenhum dano ao arquivo injetado dentro das imagens.</p>
+<p>Bom aqui termino a primeira parte sobre esse tema e acredito que possivelmente você talvez já comece enxergar um tipo de utilidade neste tipo de técnica. Lembre-se isso é um simples exemplo de como  esconder dados dentro de arquivos de imagem, na próxima parte mostrarei com combinar mais um conjunto de ideias para criar uma verdadeira maldade e um certo desafio para detectar movimentações de dados em rede interna.</p>
+<hr>
+<hr>
+<h1 id="referencias">Referencias<a href="#referencias" class="hanchor" ariaLabel="Anchor">#</a> </h1>
+<p><a href="https://pt.wikipedia.org/wiki/PNG">https://pt.wikipedia.org/wiki/PNG</a></p>
+<p><a href="https://youtu.be/M9ZwuIv3xz8">https://youtu.be/M9ZwuIv3xz8</a></p>
+<p><a href="https://web.archive.org/web/20250306100546/https://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html">https://web.archive.org/web/20250306100546/https://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html</a></p>
+<p><a href="https://web.archive.org/web/20250211172412/http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html">https://web.archive.org/web/20250211172412/http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html</a></p>
+<p><a href="https://web.archive.org/web/20250130165229/http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.Chunk-layout">https://web.archive.org/web/20250130165229/http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.Chunk-layout</a></p>
+
+      </div></div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
